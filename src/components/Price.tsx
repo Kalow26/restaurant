@@ -1,42 +1,42 @@
 "use client";
+import { ProductType } from "@/types/types";
 import { useEffect, useState } from "react";
 
-type PriceProps = {
-  price: number;
-  id: number;
-  options?: { title: string; additionalPrice: number }[];
-};
-
-const Price = ({ price, id, options }: PriceProps) => {
-  const [total, setTotal] = useState(price);
+const Price = ({ product }: { product: ProductType }) => {
+  const [total, setTotal] = useState(0);
+  const [price, setPrice] = useState(product.price);
   const [quantity, setQuantity] = useState(1);
   const [selected, setSelected] = useState(0);
 
   useEffect(() => {
-    setTotal(
-      quantity * (options ? price + options[selected].additionalPrice : price)
-    );
-  }, [quantity, selected, price, options]);
+    if (product.option?.length) {
+      setTotal(quantity * price);
+    }
+  }, [quantity, selected, product, price]);
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-2xl font-bold">${total.toFixed(2)}</h2>
+      <h2 className="text-2xl font-bold">${total}</h2>
       {/* Options container */}
       <div className="flex gap-4">
-        {options?.map((option, index) => (
-          <button
-            key={option.title}
-            className="min-w-[6rem] p-2 ring-1 ring-red-400 rounded-md"
-            style={{
-              backgroundColor:
-                selected === index ? "rgb(248 113 113)" : "white",
-              color: selected === index ? "white" : "red",
-            }}
-            onClick={() => setSelected(index)}
-          >
-            {option.title}
-          </button>
-        ))}
+        {product.option?.length &&
+          product.option?.map((option, index) => (
+            <button
+              key={option.title}
+              className="min-w-[6rem] p-2 ring-1 ring-red-400 rounded-md"
+              style={{
+                backgroundColor:
+                  selected === index ? "rgb(248 113 113)" : "white",
+                color: selected === index ? "white" : "red",
+              }}
+              onClick={() => (
+                setSelected(index),
+                setPrice(product.price + option.additionalPrice)
+              )}
+            >
+              {option.title}
+            </button>
+          ))}
       </div>
       {/* Quantity and add button container */}
       <div className="flex justify-between items-center">

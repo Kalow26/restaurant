@@ -1,8 +1,28 @@
 import Price from "@/components/Price";
-import { singleProduct } from "@/data/data";
+import { ProductType } from "@/types/types";
+
 import Image from "next/image";
 
-const SingleProduct = () => {
+const getData = async (id: string) => {
+  const res = await fetch(`http://localhost:3000/api/products/${id}`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Something went wrong!");
+  }
+
+  const singleProduct: ProductType = await res.json();
+
+  // Convert the price to a number if it's in string format
+  singleProduct.price = Number(singleProduct.price);
+
+  return singleProduct;
+};
+
+const SingleProduct = async ({ params }: { params: { id: string } }) => {
+  const singleProduct: ProductType = await getData(params.id);
+  console.log("test", typeof singleProduct.price);
   return (
     <div className="p-4 lg:px-20 xl:px-40 h-screen flex flex-col justify-around text-red-500 md:flex-row md:gap-8 md:items-center">
       {/* IMAGE CONTAINER */}
@@ -23,11 +43,7 @@ const SingleProduct = () => {
           {singleProduct.title}
         </h1>
         <p>{singleProduct.desc}</p>
-        <Price
-          price={singleProduct.price}
-          id={singleProduct.id}
-          options={singleProduct.options}
-        />
+        <Price product={singleProduct} />
       </div>
     </div>
   );

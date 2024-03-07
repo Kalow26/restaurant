@@ -45,11 +45,12 @@ const OrdersPage = () => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const input = form.elements[0] as HTMLInputElement;
-    console.log(input.value);
     const status = input.value;
     mutation.mutate({ id, status });
   };
+
   if (isPending || status === "loading") return "Loading...";
+
   return (
     <div className="p-4 lg:px-20 xl:px-40">
       <table className="w-full border-separate border-spacing-3">
